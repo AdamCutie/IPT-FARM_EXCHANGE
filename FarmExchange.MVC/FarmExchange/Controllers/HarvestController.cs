@@ -11,6 +11,7 @@ namespace FarmExchange.Controllers
     public class HarvestController : Controller
     {
         private readonly FarmExchangeDbContext _context;
+        private static readonly string[] IntegerUnits = { "bunch", "dozen", "piece" };
 
         public HarvestController(FarmExchangeDbContext context)
         {
@@ -107,6 +108,13 @@ namespace FarmExchange.Controllers
 
             if (profile?.UserType != UserType.Farmer) return RedirectToAction("Index", "Dashboard");
 
+            // Validate Quantity based on Unit
+            if (harvest.Unit != null && IntegerUnits.Contains(harvest.Unit.ToLower()) && harvest.QuantityAvailable % 1 != 0)
+            {
+                ModelState.AddModelError("QuantityAvailable", $"Quantity must be a whole number for unit '{harvest.Unit}'.");
+                return View(harvest);
+            }
+
             // Image Upload Logic
             if (imageFile != null && imageFile.Length > 0)
             {
@@ -169,6 +177,13 @@ namespace FarmExchange.Controllers
             var existingHarvest = await _context.Harvests.FindAsync(id);
 
             if (existingHarvest == null || existingHarvest.UserId != userId) return RedirectToAction("Manage");
+
+            // Validate Quantity based on Unit
+            if (harvest.Unit != null && IntegerUnits.Contains(harvest.Unit.ToLower()) && harvest.QuantityAvailable % 1 != 0)
+            {
+                ModelState.AddModelError("QuantityAvailable", $"Quantity must be a whole number for unit '{harvest.Unit}'.");
+                return View(harvest);
+            }
 
             // Image Update Logic
             if (imageFile != null && imageFile.Length > 0)
@@ -268,6 +283,13 @@ namespace FarmExchange.Controllers
             if (harvest == null || quantity <= 0 || quantity > harvest.QuantityAvailable)
             {
                 TempData["Error"] = "Invalid quantity or out of stock.";
+                return RedirectToAction("Browse");
+            }
+
+            // Validate Quantity based on Unit
+            if (harvest.Unit != null && IntegerUnits.Contains(harvest.Unit.ToLower()) && quantity % 1 != 0)
+            {
+                TempData["Error"] = $"Quantity must be a whole number for unit '{harvest.Unit}'.";
                 return RedirectToAction("Browse");
             }
 

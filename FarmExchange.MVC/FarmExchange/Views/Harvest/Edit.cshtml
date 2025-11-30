@@ -97,3 +97,26 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const unitSelect = document.getElementById('Unit');
+            const quantityInput = document.getElementById('QuantityAvailable');
+
+            function updateStep() {
+                const unit = unitSelect.value.toLowerCase();
+                if (['bunch', 'dozen', 'piece'].includes(unit)) {
+                    quantityInput.step = '1';
+                } else {
+                    quantityInput.step = '0.01';
+                }
+            }
+
+            unitSelect.addEventListener('change', updateStep);
+
+            // Initial check
+            updateStep();
+        });
+    </script>
+}

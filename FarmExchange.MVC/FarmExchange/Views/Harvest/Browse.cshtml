@@ -183,8 +183,20 @@
             document.getElementById('modalTitle').textContent = 'Purchase ' + title;
             document.getElementById('modalPrice').textContent = 'Price: $' + price.toFixed(2) + '/' + unit;
             document.getElementById('modalAvailable').textContent = 'Available: ' + available + ' ' + unit;
-            document.getElementById('quantity').value = '1';
-            document.getElementById('quantity').max = available;
+
+            const quantityInput = document.getElementById('quantity');
+            quantityInput.value = '1';
+            quantityInput.max = available;
+
+            // Adjust step based on unit
+            if (['bunch', 'dozen', 'piece'].includes(unit.toLowerCase())) {
+                quantityInput.step = '1';
+                quantityInput.min = '1'; // Typically you can't buy 0 or negative
+            } else {
+                quantityInput.step = '0.01';
+                quantityInput.min = '0.01';
+            }
+
             updateTotal();
             document.getElementById('purchaseModal').classList.remove('hidden');
             document.getElementById('purchaseModal').classList.add('flex');
