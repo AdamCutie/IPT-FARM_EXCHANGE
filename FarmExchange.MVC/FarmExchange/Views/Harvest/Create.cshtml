@@ -80,3 +80,28 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const unitSelect = document.getElementById('Unit');
+            const quantityInput = document.getElementById('QuantityAvailable');
+
+            function updateStep() {
+                const unit = unitSelect.value.toLowerCase();
+                if (['bunch', 'dozen', 'piece'].includes(unit)) {
+                    quantityInput.step = '1';
+                    // If the user has entered a decimal, we might want to round it or just let the step validation handle it.
+                    // For better UX, let's leave the value but the browser validation will kick in on submit or input.
+                } else {
+                    quantityInput.step = '0.01';
+                }
+            }
+
+            unitSelect.addEventListener('change', updateStep);
+
+            // Initial check
+            updateStep();
+        });
+    </script>
+}
